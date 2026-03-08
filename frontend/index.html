@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RansomGuard Advanced</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050810;--s1:#0b0f1a;--s2:#111828;--s3:#1a2235;
+  --border:#1e2d45;--border2:#243550;
+  --red:#ff2d4e;--orange:#ff6b2b;--yellow:#f5c400;
+  --green:#00e87a;--blue:#3b9eff;--cyan:#00d4ff;--purple:#a855f7;
+  --text:#e2ecff;--muted:#4a6080;--mono:'Share Tech Mono',monospace;
+  --sans:'Exo 2',sans-serif;
+}
+html{font-size:13px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+
+/* Scanline overlay */
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;z-index:9999}
+
+/* Header */
+header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.8rem;
+  border-bottom:1px solid var(--border);background:var(--s1);position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 20px rgba(0,0,0,.5)}
+.brand{display:flex;align-items:center;gap:.8rem}
+.brand-name{font-size:1.25rem;font-weight:800;letter-spacing:.08em;
+  background:linear-gradient(90deg,var(--red),var(--orange));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.brand-sub{font-size:.62rem;color:var(--muted);letter-spacing:.2em;text-transform:uppercase}
+.header-right{display:flex;align-items:center;gap:1.2rem}
+.conn{display:flex;align-items:center;gap:.4rem;font-size:.7rem;font-family:var(--mono)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.dot.live{background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.clock{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.btn-reset{padding:.3rem .7rem;background:transparent;border:1px solid var(--border2);
+  border-radius:4px;color:var(--muted);cursor:pointer;font:.7rem var(--sans);transition:.2s}
+.btn-reset:hover{border-color:var(--red);color:var(--red)}
+
+/* Main grid */
+main{display:grid;grid-template-columns:1fr;gap:1.2rem;padding:1.2rem 1.8rem;max-width:1700px;margin:0 auto}
+
+/* Status row */
+.status-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.9rem}
+.scard{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;
+  position:relative;overflow:hidden;transition:.3s}
+.scard::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--border2),transparent)}
+.scard.glow-red{border-color:rgba(255,45,78,.4);box-shadow:0 0 20px rgba(255,45,78,.15)}
+.scard.glow-yellow{border-color:rgba(245,196,0,.4);box-shadow:0 0 20px rgba(245,196,0,.1)}
+.scard.glow-green{border-color:rgba(0,232,122,.3);box-shadow:0 0 20px rgba(0,232,122,.08)}
+.scard-label{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.4rem}
+.scard-val{font-family:var(--mono);font-size:1.7rem;font-weight:700;line-height:1}
+.scard-val.red{color:var(--red)}
+.scard-val.green{color:var(--green)}
+.scard-val.yellow{color:var(--yellow)}
+.scard-val.blue{color:var(--blue)}
+.scard-sub{font-size:.62rem;color:var(--muted);margin-top:.3rem;font-family:var(--mono)}
+.pill{display:inline-block;padding:.2rem .7rem;border-radius:20px;font-size:.68rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;margin-top:.3rem}
+.pill-safe{background:rgba(0,232,122,.15);color:var(--green);border:1px solid rgba(0,232,122,.3)}
+.pill-suspicious{background:rgba(245,196,0,.15);color:var(--yellow);border:1px solid rgba(245,196,0,.3)}
+.pill-ransomware{background:rgba(255,45,78,.2);color:var(--red);border:1px solid rgba(255,45,78,.4);
+  animation:pill-pulse .8s infinite}
+@keyframes pill-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,45,78,.4)}50%{box-shadow:0 0 0 6px rgba(255,45,78,0)}}
+
+/* LSTM row */
+.lstm-bar-wrap{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.4rem}
+.lstm-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
+.lstm-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--cyan)}
+.lstm-badge{font-family:var(--mono);font-size:.75rem;padding:.2rem .6rem;border-radius:4px;background:var(--s3)}
+.prob-bar-outer{height:20px;background:var(--s3);border-radius:4px;overflow:hidden;position:relative}
+.prob-bar-inner{height:100%;border-radius:4px;transition:width .6s ease;position:relative}
+.prob-bar-inner::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent)}
+.prob-label{font-family:var(--mono);font-size:.72rem;margin-top:.3rem;display:flex;justify-content:space-between}
+
+/* CPU graph */
+.cpu-section{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem}
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem}
+.sec-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.badge{font-size:.62rem;padding:.15rem .45rem;border-radius:3px;background:var(--s3);
+  font-family:var(--mono);color:var(--muted)}
+.badge.alert{background:rgba(255,45,78,.2);color:var(--red)}
+canvas#cpuChart{width:100%;height:70px;display:block}
+
+/* 2 col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+@media(max-width:960px){.two-col{grid-template-columns:1fr}}
+
+/* Tables */
+.section{background:var(--s2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.fbar{display:flex;gap:.4rem;padding:.5rem .9rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.fbtn{font-size:.62rem;padding:.18rem .55rem;border-radius:3px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;transition:.15s;font-family:var(--sans)}
+.fbtn.active,.fbtn:hover{background:var(--s3);color:var(--text);border-color:var(--border2)}
+.tbl-wrap{overflow:auto;max-height:300px}
+table{width:100%;border-collapse:collapse;font-size:.73rem}
+thead th{padding:.55rem .9rem;text-align:left;font-size:.6rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
+  background:var(--s3);position:sticky;top:0;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:.12s}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+tbody td{padding:.48rem .9rem;font-family:var(--mono);font-size:.7rem}
+.empty td{text-align:center;color:var(--muted);padding:1.8rem;font-family:var(--sans)}
+.cell-path{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.op{display:inline-block;padding:.12rem .45rem;border-radius:3px;font-size:.6rem;font-weight:700;text-transform:uppercase}
+.op-create{background:rgba(0,232,122,.15);color:var(--green)}
+.op-modify{background:rgba(245,196,0,.12);color:var(--yellow)}
+.op-delete{background:rgba(255,45,78,.18);color:var(--red)}
+.op-rename{background:rgba(59,158,255,.12);color:var(--blue)}
+.risk-wrap{display:flex;align-items:center;gap:.4rem}
+.risk-bar{width:55px;height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+.risk-fill{height:100%;border-radius:2px}
+.mal-yes{color:var(--red);font-weight:700}
+.mal-no{color:var(--green)}
+.enc-yes{color:var(--orange)}
+.rtag{font-size:.58rem;padding:.08rem .3rem;border-radius:2px;margin:.05rem;
+  display:inline-block;background:rgba(255,45,78,.15);color:rgba(255,120,140,.9)}
+.rtag.low{background:rgba(245,196,0,.12);color:rgba(245,196,0,.9)}
+
+/* Alerts */
+.alert-list{padding:.4rem .7rem}
+.alert-item{display:flex;align-items:flex-start;gap:.6rem;padding:.6rem .8rem;
+  margin:.25rem 0;border-radius:7px;animation:slideIn .3s ease}
+.alert-item.crit{background:rgba(255,45,78,.08);border:1px solid rgba(255,45,78,.25)}
+.alert-item.warn{background:rgba(245,196,0,.07);border:1px solid rgba(245,196,0,.2)}
+@keyframes slideIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+.alert-icon{font-size:1.1rem}
+.alert-title{font-weight:700;font-size:.75rem}
+.alert-item.crit .alert-title{color:var(--red)}
+.alert-item.warn .alert-title{color:var(--yellow)}
+.alert-meta{font-size:.65rem;color:var(--muted);font-family:var(--mono);margin-top:.15rem}
+.alert-empty{text-align:center;color:var(--muted);padding:1.2rem;font-size:.75rem}
+
+/* Manual scan */
+.scan-box{padding:.9rem 1.1rem}
+.scan-input{width:100%;background:var(--s3);border:1px solid var(--border2);border-radius:5px;
+  padding:.45rem .7rem;color:var(--text);font-family:var(--mono);font-size:.73rem;outline:none;
+  margin-bottom:.5rem}
+.scan-input:focus{border-color:var(--blue)}
+.scan-btn{padding:.4rem .9rem;background:var(--red);border:none;border-radius:5px;
+  color:#fff;font-weight:700;cursor:pointer;font:.74rem var(--sans);transition:.2s}
+.scan-btn:hover{background:#ff4d66}
+.scan-result{font-size:.73rem;font-family:var(--mono);color:var(--muted);margin-top:.5rem;line-height:1.7}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--s2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+tr.malicious-row{background:rgba(255,45,78,.04)!important}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div>
+      <div class="brand-name">RANSOMGUARD</div>
+      <div class="brand-sub">Advanced Threat Detection — LSTM + Behavioral Analysis</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="btn-reset" onclick="resetData()">⟳ Reset</button>
+    <div class="conn"><div class="dot" id="dot"></div><span id="conn-lbl">Connecting</span></div>
+    <div class="clock" id="clk"></div>
+  </div>
+</header>
+
+<main>
+
+  <!-- STATUS CARDS -->
+  <div class="status-row">
+    <div class="scard" id="sc-status">
+      <div class="scard-label">System Status</div>
+      <div><span class="pill pill-safe" id="status-pill">SAFE</span></div>
+      <div class="scard-sub" id="last-det">Last detection: —</div>
+    </div>
+    <div class="scard" id="sc-cpu">
+      <div class="scard-label">CPU Usage</div>
+      <div class="scard-val blue" id="cpu-val">0%</div>
+      <div class="scard-sub" id="cpu-sub">Baseline: —</div>
+    </div>
+    <div class="scard">
+      <div class="scard-label">Events (24h)</div>
+      <div class="scard-val" id="ev-total">0</div>
+    </div>
+    <div class="scard" id="sc-alerts">
+      <div class="scard-label">Mass Alerts</div>
+      <div class="scard-val green" id="alert-val">0</div>
+      <div class="scard-sub">last 60s</div>
+    </div>
+    <div class="scard">
+      <div class="scard-label">Malicious Files</div>
+      <div class="scard-val red" id="mal-val">0</div>
+    </div>
+    <div class="scard">
+      <div class="scard-label">Encrypted Files</div>
+      <div class="scard-val" id="enc-val" style="color:var(--orange)">0</div>
+    </div>
+    <div class="scard">
+      <div class="scard-label">Susp. Processes</div>
+      <div class="scard-val" id="proc-val">0</div>
+    </div>
+  </div>
+
+  <!-- LSTM PROBABILITY BAR -->
+  <div class="lstm-bar-wrap">
+    <div class="lstm-header">
+      <div class="lstm-title">🧠 LSTM Deep Learning — Ransomware Probability</div>
+      <div id="lstm-badge" class="lstm-badge" style="color:var(--muted)">Model not loaded</div>
+    </div>
+    <div class="prob-bar-outer">
+      <div class="prob-bar-inner" id="lstm-bar" style="width:0%;background:var(--green)"></div>
+    </div>
+    <div class="prob-label">
+      <span style="color:var(--green)">BENIGN</span>
+      <span id="lstm-prob-val" style="color:var(--muted);font-size:.8rem">—</span>
+      <span style="color:var(--red)">RANSOMWARE</span>
+    </div>
+    <div id="lstm-window" style="font-size:.62rem;color:var(--muted);margin-top:.3rem;font-family:var(--mono)">Window: 0/30 steps</div>
+  </div>
+
+  <!-- CPU GRAPH + ALERTS -->
+  <div class="two-col">
+    <div class="cpu-section">
+      <div class="sec-header">
+        <div class="sec-title">CPU Timeline <span id="cpu-spike-badge" class="badge" style="display:none">⚡ SPIKE</span></div>
+        <span class="badge" id="cpu-badge">0%</span>
+      </div>
+      <canvas id="cpuChart"></canvas>
+    </div>
+
+    <div class="section">
+      <div class="sec-header" style="padding:.7rem 1rem">
+        <div class="sec-title">Mass Activity Alerts <span class="badge alert" id="alert-badge">0</span></div>
+      </div>
+      <div class="alert-list" id="alert-list">
+        <div class="alert-empty">No alerts — system normal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVENTS + SCAN RESULTS -->
+  <div class="two-col">
+    <div class="section">
+      <div class="sec-header" style="padding:.65rem 1rem">
+        <div class="sec-title">File Events <span class="badge" id="ev-badge">0</span></div>
+      </div>
+      <div class="fbar" id="ev-filters">
+        <button class="fbtn active" data-op="all">All</button>
+        <button class="fbtn" data-op="create">Create</button>
+        <button class="fbtn" data-op="modify">Modify</button>
+        <button class="fbtn" data-op="delete">Delete</button>
+        <button class="fbtn" data-op="rename">Rename</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Time</th><th>Op</th><th>File</th><th>Process</th><th>Risk</th><th>Enc</th></tr></thead>
+          <tbody id="ev-body"><tr class="empty"><td colspan="6">No events yet</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-header" style="padding:.65rem 1rem">
+        <div class="sec-title">Scan Results <span class="badge" id="sc-badge">0</span></div>
+      </div>
+      <div class="fbar" id="sc-filters">
+        <button class="fbtn active" data-mal="all">All</button>
+        <button class="fbtn" data-mal="true">Malicious</button>
+        <button class="fbtn" data-mal="false">Clean</button>
+        <button class="fbtn" data-mal="enc">Encrypted</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Time</th><th>File</th><th>Score</th><th>Entropy</th><th>Encrypted</th><th>Malicious</th><th>Reasons</th></tr></thead>
+          <tbody id="sc-body"><tr class="empty"><td colspan="7">No scans yet</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSES + MANUAL SCAN -->
+  <div class="two-col">
+    <div class="section">
+      <div class="sec-header" style="padding:.65rem 1rem">
+        <div class="sec-title">Suspicious Processes</div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Process</th><th>PID</th><th>Files</th><th>Max Risk</th></tr></thead>
+          <tbody id="proc-body"><tr class="empty"><td colspan="4">No suspicious processes</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-header" style="padding:.65rem 1rem">
+        <div class="sec-title">Manual File Scan</div>
+      </div>
+      <div class="scan-box">
+        <input class="scan-input" id="scan-inp" type="text" placeholder="C:\path\to\file.exe"/>
+        <button class="scan-btn" onclick="doScan()">Scan File</button>
+        <div class="scan-result" id="scan-res">Enter a file path and click Scan.</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const API   = 'http://127.0.0.1:8000/api';
+const OPTS  = { cache:'no-store' };
+const CPU_MAX = 120;
+let cpuData = Array(CPU_MAX).fill(0);
+let allEvents = [], allScans = [], evFilter = 'all', scFilter = 'all';
+
+// Clock
+setInterval(() => {
+  document.getElementById('clk').textContent = new Date().toUTCString().replace('GMT','UTC');
+}, 1000);
+
+// Helpers
+function fmtTime(iso){
+  try{
+    if(!iso||iso===''||iso==='null'||iso==='undefined') return '—';
+    let s=String(iso).trim();
+    s=s.replace('+00:00','Z').replace(/\+\d{2}:\d{2}$/,'Z');
+    if(!s.endsWith('Z')&&!s.includes('+')) s=s+'Z';
+    const d=new Date(s);
+    if(isNaN(d.getTime())){
+      // try extract HH:MM:SS directly
+      const m=String(iso).match(/(\d{2}:\d{2}:\d{2})/);
+      return m?m[1]:'—';
+    }
+    return d.toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  }catch(e){return String(iso).slice(11,19)||'—';}
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function rc(r){return r>=.7?'var(--red)':r>=.4?'var(--yellow)':'var(--green)';}
+function riskHtml(r){
+  const pct=Math.round(r*100);
+  return `<div class="risk-wrap"><div class="risk-bar"><div class="risk-fill" style="width:${pct}%;background:${rc(r)}"></div></div><span style="font-size:.68rem;color:${rc(r)};width:30px;text-align:right">${r.toFixed(2)}</span></div>`;
+}
+function opHtml(op){
+  const m={create:'op-create',modify:'op-modify',delete:'op-delete',rename:'op-rename'};
+  return `<span class="op ${m[op]||''}">${esc(op)}</span>`;
+}
+function shortPath(p){const pts=p.replace(/\\/g,'/').split('/');return pts.slice(-2).join('/');}
+
+// CPU mini-chart
+const canvas = document.getElementById('cpuChart');
+const ctx    = canvas.getContext('2d');
+function drawCpu(){
+  const W=canvas.offsetWidth, H=70;
+  canvas.width=W; canvas.height=H;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(59,158,255,0.05)';
+  ctx.fillRect(0,0,W,H);
+  // Grid lines
+  [25,50,75].forEach(v=>{
+    ctx.strokeStyle='rgba(255,255,255,0.04)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(0,H*(1-v/100)); ctx.lineTo(W,H*(1-v/100)); ctx.stroke();
+  });
+  // Line
+  ctx.beginPath();
+  cpuData.forEach((v,i)=>{
+    const x=i*(W/CPU_MAX), y=H*(1-v/100);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle='var(--blue)'; ctx.lineWidth=1.5; ctx.stroke();
+  // Fill
+  ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath();
+  ctx.fillStyle='rgba(59,158,255,0.08)'; ctx.fill();
+  // Spike markers
+  cpuData.forEach((v,i)=>{
+    if(v>=70){
+      const x=i*(W/CPU_MAX);
+      ctx.fillStyle='rgba(255,45,78,0.6)';
+      ctx.fillRect(x-0.5,0,1,H);
+    }
+  });
+}
+
+// Render functions
+function renderEvents(){
+  const body=document.getElementById('ev-body');
+  const list=evFilter==='all'?allEvents:allEvents.filter(e=>e.operation===evFilter);
+  document.getElementById('ev-badge').textContent=allEvents.length;
+  if(!list.length){body.innerHTML='<tr class="empty"><td colspan="6">No events</td></tr>';return;}
+  body.innerHTML=list.map(e=>`<tr>
+    <td>${fmtTime(e.timestamp)}</td>
+    <td>${opHtml(e.operation)}</td>
+    <td class="cell-path" title="${esc(e.path)}">${esc(shortPath(e.path))}</td>
+    <td style="color:var(--muted);font-size:.65rem">${esc(e.process_name||'—')}</td>
+    <td>${riskHtml(e.risk_score)}</td>
+    <td>${e.is_encrypted?'<span class="enc-yes">ENC</span>':'<span style="color:var(--muted)">—</span>'}</td>
+  </tr>`).join('');
+}
+
+function renderScans(){
+  const body=document.getElementById('sc-body');
+  let list=allScans;
+  if(scFilter==='true')  list=allScans.filter(s=>s.malicious);
+  else if(scFilter==='false') list=allScans.filter(s=>!s.malicious);
+  else if(scFilter==='enc')   list=allScans.filter(s=>s.is_encrypted);
+  document.getElementById('sc-badge').textContent=allScans.length;
+  document.getElementById('mal-val').textContent=allScans.filter(s=>s.malicious).length;
+  document.getElementById('enc-val').textContent=allScans.filter(s=>s.is_encrypted).length;
+  if(!list.length){body.innerHTML='<tr class="empty"><td colspan="7">No scans yet</td></tr>';return;}
+  body.innerHTML=list.map(s=>{
+    const rs=(s.reasons||[]);
+    const rtags=rs.map(r=>`<span class="rtag${r.includes('string')||r.includes('ext')?'':' low'}">${esc(r.replace(':',': ').slice(0,20))}</span>`).join('');
+    return `<tr class="${s.malicious?'malicious-row':''}">
+      <td>${fmtTime(s.scanned_at||'')}</td>
+      <td class="cell-path" title="${esc(s.path)}">${esc(shortPath(s.path))}</td>
+      <td>${riskHtml(s.score)}</td>
+      <td style="color:${s.entropy>7?'var(--red)':s.entropy>5?'var(--yellow)':'var(--muted)'}">${(s.entropy||0).toFixed(2)}</td>
+      <td>${s.is_encrypted?`<span class="enc-yes">YES(${(s.encryption_conf||0).toFixed(2)})</span>`:'<span style="color:var(--muted)">—</span>'}</td>
+      <td class="${s.malicious?'mal-yes':'mal-no'}">${s.malicious?'YES':'Clean'}</td>
+      <td style="max-width:180px">${rtags||'<span style="color:var(--muted)">—</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAlerts(alerts){
+  const list=document.getElementById('alert-list');
+  document.getElementById('alert-badge').textContent=alerts.length;
+  document.getElementById('alert-val').textContent=alerts.length;
+  document.getElementById('alert-val').className='scard-val '+(alerts.length>0?'red':'green');
+  document.getElementById('sc-alerts').className='scard '+(alerts.length>0?'glow-red':'');
+  if(!alerts.length){list.innerHTML='<div class="alert-empty">No alerts — system normal</div>';return;}
+  list.innerHTML=alerts.slice(0,8).map(a=>{
+    const c=a.severity==='critical';
+    return `<div class="alert-item ${c?'crit':'warn'}">
+      <div class="alert-icon">${c?'🔥':'⚠️'}</div>
+      <div><div class="alert-title">MASS ${a.operation.toUpperCase()} — ${a.count} files/${a.window_secs}s</div>
+      <div class="alert-meta">${esc(a.process_name)} · ${fmtTime(a.timestamp)} · ${a.severity.toUpperCase()}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderProcs(procs){
+  const body=document.getElementById('proc-body');
+  document.getElementById('proc-val').textContent=procs.length;
+  if(!procs.length){body.innerHTML='<tr class="empty"><td colspan="4">No suspicious processes</td></tr>';return;}
+  body.innerHTML=procs.map(p=>`<tr>
+    <td>${esc(p.process_name)}</td>
+    <td style="color:var(--muted)">${p.pid}</td>
+    <td>${p.files_touched}</td>
+    <td>${riskHtml(p.risk_score)}</td>
+  </tr>`).join('');
+}
+
+function renderStatus(s){
+  const pill=document.getElementById('status-pill');
+  const labels={safe:'✅ SAFE',suspicious:'⚠ SUSPICIOUS',ransomware_detected:'🔴 RANSOMWARE DETECTED'};
+  pill.textContent=labels[s.status]||s.status;
+  pill.className='pill pill-'+(s.status==='ransomware_detected'?'ransomware':s.status);
+  document.getElementById('ev-total').textContent=s.total_events_24h;
+  document.getElementById('last-det').textContent=s.last_detection_time?'Last: '+fmtTime(s.last_detection_time):'Last detection: —';
+  const glow={safe:'glow-green',suspicious:'glow-yellow',ransomware_detected:'glow-red'};
+  document.getElementById('sc-status').className='scard '+(glow[s.status]||'');
+
+  // CPU
+  const cpu=s.cpu_percent||0;
+  document.getElementById('cpu-val').textContent=cpu.toFixed(1)+'%';
+  document.getElementById('cpu-val').style.color=cpu>=70?'var(--red)':cpu>=50?'var(--yellow)':'var(--blue)';
+  document.getElementById('sc-cpu').className='scard '+(s.cpu_spike_active?'glow-red':'');
+  document.getElementById('cpu-badge').textContent=cpu.toFixed(1)+'%';
+  const spikeBadge=document.getElementById('cpu-spike-badge');
+  spikeBadge.style.display=s.cpu_spike_active?'inline':'none';
+
+  // LSTM
+  if(s.lstm_ready){
+    const prob=s.lstm_ransomware_prob||0;
+    const pct=Math.round(prob*100);
+    const bar=document.getElementById('lstm-bar');
+    bar.style.width=pct+'%';
+    bar.style.background=prob>=.65?'var(--red)':prob>=.4?'var(--yellow)':'var(--green)';
+    document.getElementById('lstm-prob-val').textContent=(prob*100).toFixed(1)+'% ransomware probability';
+    document.getElementById('lstm-prob-val').style.color=prob>=.65?'var(--red)':prob>=.4?'var(--yellow)':'var(--green)';
+    document.getElementById('lstm-badge').textContent=`LSTM: ${(s.combined_score*100).toFixed(1)}% threat score`;
+    document.getElementById('lstm-badge').style.color=prob>=.65?'var(--red)':'var(--cyan)';
+  } else {
+    document.getElementById('lstm-badge').textContent='Collecting window... ('+predictor_fill+'/30)';
+  }
+}
+
+let predictor_fill=0;
+
+async function fetchAll(){
+  try{
+    const [status,events,scans,alerts,procs,lstm,cpu]=await Promise.all([
+      fetch(`${API}/status`,OPTS).then(r=>r.json()),
+      fetch(`${API}/events?limit=200`,OPTS).then(r=>r.json()),
+      fetch(`${API}/scan-results?limit=200`,OPTS).then(r=>r.json()),
+      fetch(`${API}/mass-alerts?limit=20`,OPTS).then(r=>r.json()),
+      fetch(`${API}/suspicious-processes`,OPTS).then(r=>r.json()),
+      fetch(`${API}/lstm-status`,OPTS).then(r=>r.json()),
+      fetch(`${API}/cpu?limit=120`,OPTS).then(r=>r.json()),
+    ]);
+    document.getElementById('dot').className='dot live';
+    document.getElementById('conn-lbl').textContent='Live';
+
+    allEvents=events; allScans=scans;
+
+    // Update CPU chart from /api/cpu endpoint OR from status
+    if(cpu && cpu.length){
+      cpuData=Array(CPU_MAX).fill(0);
+      cpu.slice(-CPU_MAX).forEach((s,i)=>{ cpuData[i]=s.cpu_percent||0; });
+      document.getElementById('cpu-sub').textContent=
+        `Baseline: ${cpu[cpu.length-1]?.baseline?.toFixed(1)||'—'}%`;
+    } else {
+      // fallback: use psutil directly via status cpu_percent
+      const cpuNow = status.cpu_percent||0;
+      cpuData.shift(); cpuData.push(cpuNow);
+      document.getElementById('cpu-sub').textContent=`Live: ${cpuNow.toFixed(1)}%`;
+    }
+    drawCpu();
+
+    // LSTM window fill
+    if(lstm && lstm.window_fill){
+      predictor_fill=parseInt(lstm.window_fill)||0;
+      document.getElementById('lstm-window').textContent=`Window: ${lstm.window_fill} steps`;
+    }
+
+    renderStatus(status);
+    renderEvents();
+    renderScans();
+    renderAlerts(alerts);
+    renderProcs(procs);
+
+  }catch(e){
+    document.getElementById('dot').className='dot';
+    document.getElementById('conn-lbl').textContent='Offline';
+  }
+}
+
+fetchAll();
+setInterval(fetchAll,2000);
+window.addEventListener('resize',drawCpu);
+
+// Filters
+document.getElementById('ev-filters').addEventListener('click',e=>{
+  const b=e.target.closest('[data-op]'); if(!b) return;
+  document.querySelectorAll('#ev-filters .fbtn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); evFilter=b.dataset.op; renderEvents();
+});
+document.getElementById('sc-filters').addEventListener('click',e=>{
+  const b=e.target.closest('[data-mal]'); if(!b) return;
+  document.querySelectorAll('#sc-filters .fbtn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); scFilter=b.dataset.mal; renderScans();
+});
+
+// Manual scan
+async function doScan(){
+  const path=document.getElementById('scan-inp').value.trim();
+  if(!path) return;
+  const el=document.getElementById('scan-res');
+  el.style.color='var(--muted)'; el.innerHTML='Scanning...';
+  try{
+    const r=await fetch(`${API}/scan-file`,{method:'POST',headers:{'Content-Type':'application/json'},
+      cache:'no-store',body:JSON.stringify({path})});
+    const d=await r.json();
+    const c=d.malicious?'var(--red)':d.score>=.4?'var(--yellow)':'var(--green)';
+    el.style.color=c;
+    el.innerHTML=`<b>${d.malicious?'🔴 MALICIOUS':'✅ Clean'}</b>
+  Score: <b>${d.score}</b>  Entropy: <b>${(d.entropy||0).toFixed(2)}</b>
+  Encrypted: <b>${d.is_encrypted?'YES (conf='+d.encryption_conf+')':'No'}</b>
+  Reasons: <span style="color:var(--muted)">${(d.reasons||[]).join(', ')||'none'}</span>`;
+    fetchAll();
+  }catch(e){el.style.color='var(--red)';el.innerHTML='Error: '+e.message;}
+}
+document.getElementById('scan-inp').addEventListener('keydown',e=>{if(e.key==='Enter')doScan();});
+
+async function resetData(){
+  if(!confirm('Clear all in-memory detection data?'))return;
+  await fetch(`${API}/reset`,{method:'POST',cache:'no-store'});
+  fetchAll();
+}
+</script>
+</body>
+</html>
