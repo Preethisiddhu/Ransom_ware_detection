@@ -67,20 +67,20 @@ def build_feature_vector(event: dict, context: dict) -> np.ndarray:
     f[17] = float(min(context.get("events_per_sec", 0) / 10.0, 1.0))
     f[18] = float(min(context.get("unique_extensions", 0) / 20.0, 1.0))
 
+    # FIX: on parse failure use actual current hour instead of constant 0.5
     try:
         ts = event.get("timestamp", "")
         dt = datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
         f[19] = dt.hour / 24.0
     except Exception:
-        f[19] = 0.5
+        print(f"[feature] bad timestamp, using current hour: {event.get('timestamp','')}")
+        f[19] = datetime.now(timezone.utc).hour / 24.0
 
     return f
 
 
 # ── Quick test ────────────────────────────────────────────────
 if __name__ == "__main__":
-    from datetime import timezone
-
     benign_event = {
         "operation": "create", "risk_score": 0.1, "entropy": 3.2,
         "has_encrypted_ext": False, "has_suspicious_str": False,

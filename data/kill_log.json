@@ -1,0 +1,196 @@
+[
+  {
+    "pid": 10588,
+    "name": "python.exe",
+    "username": "DESKTOP-V1BN47M\\Admin",
+    "cmdline": ".\\.venv\\Scripts\\python.exe simulate.py",
+    "process_started": "2026-04-05T12:53:08.844039",
+    "killed_at": "2026-04-05T07:23:11.690546+00:00",
+    "killed_date": "2026-04-05",
+    "killed_time": "12:53:11",
+    "trigger": "auto",
+    "cpu_at_kill": 0.0,
+    "cpu_threshold": 30.0,
+    "open_files": [
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\evwexhah.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\wkbuufxs.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\bioxkuek.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\qsdffybj.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\appdcugt.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\vhnbaqjn.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\itfdmhks.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\tawotdox.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\sscnahji.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\mnpfilob.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\ksbmrpmg.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\znoimtma.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\czepmwtc.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\udyjocfe.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\cecevwze.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\ckpswqda.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\tlklffit.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\euwidurj.locked",
+      "C:\\Windows\\System32\\en-US\\KernelBase.dll.mui",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\dudozyrd.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\jxebgrjm.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\lyhtkqwb.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\szxvtpeu.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\xaebwbpe.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\alhhkxnt.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\uxevhdwo.locked",
+      "C:\\Users\\Admin\\Desktop\\test_sandbox\\eyhjzqxk.locked"
+    ],
+    "open_file_count": 27,
+    "quarantined": [
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\evwexhah.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\evwexhah.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\wkbuufxs.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\wkbuufxs.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\bioxkuek.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\bioxkuek.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\qsdffybj.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\qsdffybj.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\appdcugt.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\appdcugt.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\vhnbaqjn.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\vhnbaqjn.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\itfdmhks.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\itfdmhks.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\tawotdox.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\tawotdox.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\sscnahji.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\sscnahji.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\mnpfilob.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\mnpfilob.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\ksbmrpmg.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\ksbmrpmg.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\znoimtma.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\znoimtma.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\czepmwtc.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\czepmwtc.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\udyjocfe.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\udyjocfe.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\cecevwze.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\cecevwze.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\ckpswqda.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\ckpswqda.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\tlklffit.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\tlklffit.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\euwidurj.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\euwidurj.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\dudozyrd.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\dudozyrd.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\jxebgrjm.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\jxebgrjm.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\lyhtkqwb.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\lyhtkqwb.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\szxvtpeu.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\szxvtpeu.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\xaebwbpe.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\xaebwbpe.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\alhhkxnt.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\alhhkxnt.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\uxevhdwo.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\uxevhdwo.locked'"
+      },
+      {
+        "status": "error",
+        "original": "C:\\Users\\Admin\\Desktop\\test_sandbox\\eyhjzqxk.locked",
+        "reason": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Admin\\\\Desktop\\\\test_sandbox\\\\eyhjzqxk.locked'"
+      }
+    ],
+    "quarantine_count": 26,
+    "quarantine_dir": "C:\\Users\\Admin\\Desktop\\RansomGuard_Advanced\\data\\quarantine",
+    "ransomware_type": "Generic/Unknown",
+    "detection_reason": "simulate.py + 27 ransomware files open",
+    "safety_measures": [
+      "Isolate machine from network immediately",
+      "Do NOT pay ransom \u2014 no guarantee of recovery",
+      "Restore files from most recent clean backup",
+      "Check for shadow copies: vssadmin list shadows",
+      "Report incident to cybersecurity team",
+      "Preserve disk image for forensic analysis",
+      "Run full malware scan after isolation"
+    ],
+    "actions_taken": [
+      "process_killed: python.exe (pid=10588)",
+      "encrypted_files_quarantined: 26",
+      "kill_log_saved: C:\\Users\\Admin\\Desktop\\RansomGuard_Advanced\\data\\kill_log.json",
+      "ransomware_identified: Generic/Unknown"
+    ]
+  }
+]

@@ -20,9 +20,8 @@ _lock = threading.Lock()
 _events:       deque = deque(maxlen=5000)
 _scan_results: deque = deque(maxlen=2000)
 _mass_alerts:  deque = deque(maxlen=500)
-_cpu_samples:  deque = deque(maxlen=3600)   # 1hr of 1s samples
+_cpu_samples:  deque = deque(maxlen=3600)
 
-# Rolling feature window for LSTM
 _feature_window: deque = deque(maxlen=SEQUENCE_LENGTH)
 
 _proc_op_times: Dict[str, Dict[str, deque]] = defaultdict(
@@ -32,10 +31,8 @@ _proc_stats: Dict[str, Dict] = defaultdict(
     lambda: {"files_touched": 0, "risk_score": 0.0, "pid": -1}
 )
 
-# Op count windows for mass detection
 _op_counts: Dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
 
-# Current session info
 _current_session = {"session_id": "default", "label": -1}
 
 
@@ -44,8 +41,9 @@ def _now() -> datetime:
 
 
 def _parse_dt(ts) -> Optional[datetime]:
+    # FIX: use +00:00 replacement so timezone info is preserved correctly
     try:
-        dt = datetime.fromisoformat(str(ts).replace("Z", ""))
+        dt = datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=timezone.utc)
         return dt
@@ -137,12 +135,13 @@ def add_scan_result(result: dict):
 def remove_scan_results_for_path(path: str):
     norm = os.path.normpath(path)
     with _lock:
-        keep: deque = deque(maxlen=2000)
-        for s in _scan_results:
-            if os.path.normpath(str(s.get("path", ""))) != norm:
-                keep.append(s)
+        # FIX: cleaner single-pass filter using generator
+        new_q = deque(
+            (s for s in _scan_results if os.path.normpath(str(s.get("path", ""))) != norm),
+            maxlen=2000
+        )
         _scan_results.clear()
-        _scan_results.extend(keep)
+        _scan_results.extend(new_q)
     print(f"[store] removed scan results: {os.path.basename(path)}")
 
 
@@ -187,7 +186,6 @@ def get_suspicious_processes() -> List[dict]:
 # ── Feature Window (for LSTM) ───────────────────────────────
 
 def push_feature_vector(vec):
-    """Push a numpy/list feature vector into LSTM sliding window."""
     with _lock:
         _feature_window.append(vec)
 
@@ -198,7 +196,6 @@ def get_feature_window():
 
 
 def get_context_for_features() -> dict:
-    """Returns rolling stats needed by feature_extractor."""
     cpu = get_latest_cpu()
     mass = _get_mass_counts()
     with _lock:
@@ -212,9 +209,9 @@ def get_context_for_features() -> dict:
             if x:
                 exts.add(x)
     return {
-        "cpu_percent":      cpu.get("cpu_percent", 0.0),
-        "cpu_is_spike":     cpu.get("is_spike", False),
-        "cpu_spike_delta":  cpu.get("spike_delta", 0.0),
+        "cpu_percent":       cpu.get("cpu_percent", 0.0),
+        "cpu_is_spike":      cpu.get("is_spike", False),
+        "cpu_spike_delta":   cpu.get("spike_delta", 0.0),
         "mass_create_count": mass.get("create", 0),
         "mass_delete_count": mass.get("delete", 0),
         "mass_modify_count": mass.get("modify", 0),
@@ -288,14 +285,12 @@ def get_current_status(lstm_result: Optional[dict] = None) -> dict:
     cpu = get_latest_cpu()
     cpu_spike_active = cpu.get("is_spike", False)
 
-    # LSTM signal
     lstm_ransomware = False
     lstm_prob       = 0.0
     if lstm_result and lstm_result.get("ready"):
         lstm_prob       = lstm_result.get("ransomware_prob", 0.0)
         lstm_ransomware = lstm_prob >= 0.65
 
-    # Combined rule + LSTM score
     rule_score     = max_risk
     combined_score = round(0.4 * rule_score + 0.6 * lstm_prob, 3) if lstm_result and lstm_result.get("ready") else rule_score
 
